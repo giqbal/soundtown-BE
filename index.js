@@ -1,13 +1,8 @@
-const serverless = require('serverless-http');
-const express = require('express');
-const apiRouter = require('./routes/api');
+const app = require('./app');
 
-const app = express();
+const PORT = process.env.PORT || 9090;
 
-app.use('/api/', apiRouter);
-
-app.use('*', (req, res, next) => {
-  next({ status: 404, message: 'Page not found' });
+app.listen(PORT, (err) => {
+  if (err) throw err;
+  console.log(`Listening on port ${PORT}`);
 });
-
-module.exports = { handler: serverless(app), app };

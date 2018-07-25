@@ -4,21 +4,30 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./spec/*.spec.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.279.1",
+    "axios": "^0.18.0",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
-    "serverless-http": "^1.6.0"
+    "multer": "^1.3.1",
+    "multer-s3": "^2.7.0"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.10.0",
-    "serverless-offline": "^3.25.6"
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.3",
+    "supertest": "^3.1.0"
   }
 }
