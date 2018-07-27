@@ -12,7 +12,7 @@ app.use('*', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).send({ message: 'Internal Server Error' });
+  res.status(500).send({ err });
 });
 
 module.exports = app;
