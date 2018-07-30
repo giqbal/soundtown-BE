@@ -70,7 +70,7 @@ const processSample = (req, res, next) => {
         if (currentStatuses.every(({ data }) => data.file.status === 'ready')) {
           checkQueueStatus.stop();
           const convertedTones = tones.reduce((acc, tone, index) => {
-            acc[tone] = `https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${currentStatuses[index].data.file.file_id}`;
+            acc[tone] = `https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${currentStatuses[index].data.file.file_id}&format=mp3-cbr`;
             return acc;
           }, {});
           res.send({ convertedTones });
