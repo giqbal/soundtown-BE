@@ -17,7 +17,7 @@ const upload = multer({
     bucket: sampleBucket,
     acl: 'public-read',
     key: (req, file, cb) => {
-      cb(null, file.originalname);
+      cb(null, `${Date.now()}/${file.originalname}`);
     },
   }),
 });

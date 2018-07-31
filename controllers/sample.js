@@ -9,8 +9,9 @@ const {
 const { convertToMp3 } = require('../utils');
 
 const processSample = (req, res, next) => {
+  const { file } = req;
+  const convertedFileName = `${file.key.split('/')[0]}/converted_recording.mp3`;
   const convertedBucket = 'soundtown.converted.sample';
-  const convertedFileName = 'converted_recording.mp3';
   const s3 = new aws.S3({
     accessKeyId: AWS_ACCESS_KEY_ID,
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
@@ -31,7 +32,6 @@ const processSample = (req, res, next) => {
   };
   let checkQueueStatus;
   const tones = Object.keys(midiNumLookUp);
-  const { file } = req;
   convertToMp3(file, convertedBucket, convertedFileName)
     .then(({ data }) => {
       if (data.message === 'Saved file to S3') {
@@ -60,6 +60,7 @@ const processSample = (req, res, next) => {
             acc[tone] = `https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${currentStatuses[index].data.file.file_id}&format=mp3-cbr`;
             return acc;
           }, {});
+          s3.deleteObject({ Bucket: convertedBucket, Key: convertedFileName }).promise();
           res.send({ convertedTones });
         }
       });
