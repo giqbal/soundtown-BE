@@ -49,7 +49,7 @@ const processSample = (req, res, next) => {
           .then((statuses) => {
             end(null, statuses);
           });
-      }, 100);
+      }, 50);
 
       checkQueueStatus.run();
 
