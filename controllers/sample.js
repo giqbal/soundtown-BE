@@ -29,7 +29,6 @@ const midiNumLookUp = {
 
 const processSample = (req, res, next) => {
   const { file } = req;
-  let checkQueueStatus;
   const convertedBucket = 'soundtown.converted.sample';
   const tones = Object.keys(midiNumLookUp);
   if (file === undefined) res.status(415).send('Sorry, could not find any media attached to the request');
@@ -47,7 +46,7 @@ const processSample = (req, res, next) => {
         return Promise.all(toneQueries);
       })
       .then((queueInfo) => {
-        checkQueueStatus = asyncPolling((end) => {
+        const checkQueueStatus = asyncPolling((end) => {
           const checkStatuses = queueInfo.map(conversion => axios.get(`https://api.sonicapi.com/file/status?access_id=${SONICAPI_ACCESS_ID}&file_id=${conversion.data.file.file_id}&format=json`));
           Promise.all(checkStatuses)
             .then((statuses) => {
