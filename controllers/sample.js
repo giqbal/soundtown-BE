@@ -32,8 +32,8 @@ const processSample = (req, res, next) => {
   let checkQueueStatus;
   const convertedBucket = 'soundtown.converted.sample';
   const tones = Object.keys(midiNumLookUp);
-  if (file === undefined) res.status(415).send('Sorry, could not find any media attached to the request');
-  else if (file.mimetype !== 'audio/x-caf') res.status(415).send('Recording not in .caf file format');
+  if (file === undefined) res.status(415).send({ message: 'Sorry, could not find any media attached to the request' });
+  else if (file.mimetype !== 'audio/x-caf') res.status(415).send({ message: 'Recording not in .caf file format' });
   else {
     const convertedFileName = `${file.key.split('/')[0]}/converted_recording.mp3`;
     convertToMp3(file, convertedBucket, convertedFileName)
