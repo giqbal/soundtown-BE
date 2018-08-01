@@ -21,5 +21,9 @@ describe('soundtown API', function () {
       .post('/api/sample')
       .attach('file', 'spec/soundtown-sample.mp3')
       .expect(415));
+    it('Status 404 returned for invalid URL', () => request
+      .post('/api/samples')
+      .attach('file', 'spec/soundtown-simulated-sample.caf')
+      .expect(404));
   });
 });
