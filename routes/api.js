@@ -3,6 +3,7 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 const sampleRouter = require('./sample');
+const reverbRouter = require('./reverb');
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env.NODE_ENV ? process.env : require('../config');
 
 const s3 = new aws.S3({
@@ -23,5 +24,6 @@ const upload = multer({
 });
 
 apiRouter.use('/sample', upload.single('file'), sampleRouter);
+apiRouter.use('/reverb', reverbRouter);
 
 module.exports = apiRouter;

@@ -29,7 +29,6 @@ const midiNumLookUp = {
 
 const processSample = (req, res, next) => {
   const { file } = req;
-  let checkQueueStatus;
   const convertedBucket = 'soundtown.converted.sample';
   const toneBucket = 'soundtown.pitched.audio';
   const tones = Object.keys(midiNumLookUp);
@@ -49,7 +48,7 @@ const processSample = (req, res, next) => {
         return Promise.all(toneQueries);
       })
       .then((queueInfo) => {
-        let tonesToBuffer = [];
+        const tonesToBuffer = [];
         checkQueueStatus = asyncPolling((end) => {
           const checkStatuses = queueInfo.map(conversion => axios.get(`https://api.sonicapi.com/file/status?access_id=${SONICAPI_ACCESS_ID}&file_id=${conversion.data.file.file_id}&format=json`));
           Promise.all(checkStatuses)
@@ -93,4 +92,4 @@ const processSample = (req, res, next) => {
   }
 };
 
-module.exports = { processSample };
+module.exports = { processSample, midiNumLookUp };
