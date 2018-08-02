@@ -1,11 +1,13 @@
 const axios = require('axios');
 const asyncPolling = require('async-polling');
+const { midiNumLookUp } = require('./sample');
 const { SONICAPI_ACCESS_ID } = process.env.NODE_ENV ? process.env : require('../config');
 
 const processReverb = (req, res, next) => {
-  const toneFileIds = req.query;
-  const tones = Object.keys(toneFileIds);
-  const getReverbedTones = tones.map(tone => axios.get(`https://api.sonicAPI.com/process/reverb?access_id=${SONICAPI_ACCESS_ID}&input_file=https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${toneFileIds[tone]}&format=mp3-cbr&blocking=false&format=json&preset=large_hall&wetness=1`));
+  const { instance } = req.query;
+  const toneBucket = 'soundtown.pitched.audio';
+  const tones = Object.keys(midiNumLookUp);
+  const getReverbedTones = tones.map(tone => axios.get(`https://api.sonicAPI.com/process/reverb?access_id=${SONICAPI_ACCESS_ID}&input_file=https://s3.eu-west-2.amazonaws.com/${toneBucket}/${instance}/${tone}.mp3&blocking=false&format=json&preset=large_hall&wetness=1`));
   Promise.all(getReverbedTones)
     .then((reverbQueue) => {
       const checkQueueStatus = asyncPolling((end) => {

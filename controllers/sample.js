@@ -72,4 +72,4 @@ const processSample = (req, res, next) => {
   }
 };
 
-module.exports = { processSample };
+module.exports = { processSample, midiNumLookUp };
