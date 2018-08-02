@@ -48,8 +48,7 @@ const processSample = (req, res, next) => {
         return Promise.all(toneQueries);
       })
       .then((queueInfo) => {
-        const tonesToBuffer = [];
-        checkQueueStatus = asyncPolling((end) => {
+        const checkQueueStatus = asyncPolling((end) => {
           const checkStatuses = queueInfo.map(conversion => axios.get(`https://api.sonicapi.com/file/status?access_id=${SONICAPI_ACCESS_ID}&file_id=${conversion.data.file.file_id}&format=json`));
           Promise.all(checkStatuses)
             .then((statuses) => {
@@ -63,12 +62,11 @@ const processSample = (req, res, next) => {
           if (currentStatuses.every(({ data }) => data.file.status === 'ready')) {
             checkQueueStatus.stop();
             s3.deleteObject({ Bucket: convertedBucket, Key: convertedFileName }).promise();
-            tonesToBuffer = currentStatuses.map(status => axios(`https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${status.data.file.file_id}&format=mp3-cbr`, {
+            const tonesToBuffer = currentStatuses.map(status => axios(`https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${status.data.file.file_id}&format=mp3-cbr`, {
               responseType: 'arraybuffer',
             }));
             Promise.all(tonesToBuffer)
               .then((toneBuffers) => {
-                console.log(toneBuffers);
                 const storeToS3 = tones.map((tone, index) => s3.putObject({
                   Body: toneBuffers[index].data,
                   Bucket: toneBucket,
@@ -84,11 +82,11 @@ const processSample = (req, res, next) => {
                 }, {});
                 res.send({ convertedTones });
               })
-              .catch(console.log);
+              .catch(next);
           }
         });
       })
-      .catch(console.log);
+      .catch(next);
   }
 };
 
