@@ -30,11 +30,13 @@ const midiNumLookUp = {
 const processSample = (req, res, next) => {
   const { file } = req;
   const convertedBucket = 'soundtown.converted.sample';
+  const toneBucket = 'soundtown.pitched.audio';
   const tones = Object.keys(midiNumLookUp);
-  if (file === undefined) res.status(415).send('Sorry, could not find any media attached to the request');
-  else if (file.mimetype !== 'audio/x-caf') res.status(415).send('Recording not in .caf file format');
+  if (file === undefined) res.status(415).send({ message: 'Sorry, could not find any media attached to the request' });
+  // else if (file.mimetype !== 'audio/x-caf') res.status(415).send({ message: 'Recording not in .caf file format' });
   else {
-    const convertedFileName = `${file.key.split('/')[0]}/converted_recording.mp3`;
+    const instanceFolder = file.key.split('/')[0];
+    const convertedFileName = `${instanceFolder}/converted_recording.mp3`;
     convertToMp3(file, convertedBucket, convertedFileName)
       .then(({ data, status }) => {
         if (data.message === 'Saved file to S3') {
@@ -46,7 +48,8 @@ const processSample = (req, res, next) => {
         return Promise.all(toneQueries);
       })
       .then((queueInfo) => {
-        const checkQueueStatus = asyncPolling((end) => {
+        const tonesToBuffer = [];
+        checkQueueStatus = asyncPolling((end) => {
           const checkStatuses = queueInfo.map(conversion => axios.get(`https://api.sonicapi.com/file/status?access_id=${SONICAPI_ACCESS_ID}&file_id=${conversion.data.file.file_id}&format=json`));
           Promise.all(checkStatuses)
             .then((statuses) => {
@@ -59,16 +62,33 @@ const processSample = (req, res, next) => {
         checkQueueStatus.on('result', (currentStatuses) => {
           if (currentStatuses.every(({ data }) => data.file.status === 'ready')) {
             checkQueueStatus.stop();
-            const convertedTones = tones.reduce((acc, tone, index) => {
-              acc[tone] = `https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${currentStatuses[index].data.file.file_id}&format=mp3-cbr`;
-              return acc;
-            }, {});
             s3.deleteObject({ Bucket: convertedBucket, Key: convertedFileName }).promise();
-            res.send({ convertedTones });
+            tonesToBuffer = currentStatuses.map(status => axios(`https://api.sonicapi.com/file/download?access_id=${SONICAPI_ACCESS_ID}&file_id=${status.data.file.file_id}&format=mp3-cbr`, {
+              responseType: 'arraybuffer',
+            }));
+            Promise.all(tonesToBuffer)
+              .then((toneBuffers) => {
+                console.log(toneBuffers);
+                const storeToS3 = tones.map((tone, index) => s3.putObject({
+                  Body: toneBuffers[index].data,
+                  Bucket: toneBucket,
+                  Key: `${instanceFolder}/${tone}.mp3`,
+                  ACL: 'public-read',
+                }).promise());
+                return Promise.all(storeToS3);
+              })
+              .then(() => {
+                const convertedTones = tones.reduce((acc, tone) => {
+                  acc[tone] = `https://s3.eu-west-2.amazonaws.com/${toneBucket}/${instanceFolder}/${tone}.mp3`;
+                  return acc;
+                }, {});
+                res.send({ convertedTones });
+              })
+              .catch(console.log);
           }
         });
       })
-      .catch(next);
+      .catch(console.log);
   }
 };
 
