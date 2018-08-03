@@ -1,87 +1,59 @@
 # soundtown
 
-soundtown is an app that lets you record an ambient sound using your phone to create a 12 note musical instrument.
+soundtown is a mobile app that lets you record sounds around you using your phone to create a 12 note musical instrument.
 
-## Getting Started
+## Prerequisites
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Ensure you have at least NodeJS v10.1.0. JavaScript code has been written to ES6 standard.
 
-### Prerequisites
+## Installing
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+1. Fork and clone this repository to your machine
+2. Using terminal cd to the cloned directory and run this command:
 
 ```
-Give the example
+npm install
 ```
 
-And repeat
+3. Create a directory named 'config' in the root of this repository. Create file 'index.js' in the config directory
+4. Open 'index.js' file and paste the following, save and close the file:
 
 ```
-until finished
-```
+const accessKeys = {
+  AWS_ACCESS_KEY_ID: [ENTER AWS KEY HERE],
+  AWS_SECRET_ACCESS_KEY: [ENTER AWS KEY HERE],
+  SONICAPI_ACCESS_ID: [ENTER SONICAPI KEY HERE],
+  CLOUDCONVERT_API_KEY: [ENTER CLOUDCONVERT KEY HERE],
+};
 
-End with an example of getting some data out of the system or using it for a little demo
+module.exports = accessKeys;
+```
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+To run the tests run the following command in terminal:
 
 ```
-Give an example
+npm test
 ```
 
-### And coding style tests
+### Tests
 
-Explain what these tests test and why
+The test file tests for the following:
 
-```
-Give an example
-```
+1. Positive testing of all endpoints
+2. Negative testing of all end points - tests for 400, 404 and 500 errors
 
-## Deployment
+These are all the end points:
 
-Add additional notes about how to deploy this on a live system
+- POST /api/sample
+- GET /api/reverb
+
+## Deployed App
+
+Deployed app: [soundtown](https://soundtown-dev.herokuapp.com/)
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* [NPM](https://docs.npmjs.com) - JavaScript package manager
+* [Express](http://expressjs.com/en/4x/api.html) - Web Application Framework
