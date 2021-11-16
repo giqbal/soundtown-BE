@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "async-polling": "^0.2.1",
-    "aws-sdk": "^2.279.1",
+    "aws-sdk": "^2.814.0",
     "axios": "^0.18.0",
     "cors": "^2.8.4",
     "express": "^4.16.3",
